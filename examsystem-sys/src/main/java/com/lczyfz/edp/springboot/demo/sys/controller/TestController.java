@@ -57,6 +57,8 @@ public class TestController extends BaseController {
     @Autowired
     CorrectInfoMapper correctInfoMapper;
 
+    private static final String END_STATUS = "end";
+
     @ApiOperation(value = "新建考试",notes = "仅限教师创建考试")
     @PostMapping(value = "/add",consumes = "multipart/form-data")
     @ApiImplicitParams(
@@ -252,6 +254,15 @@ public class TestController extends BaseController {
 
             logger.info(result.getErrMsg());
         }else{
+            TestGroup testGroup = testGroupMapper.selectByPrimaryKey(testGroupId);
+
+            if(END_STATUS.equals(testGroup.getStatus())){
+                result.fail(MsgCodeUtils.MSC_DATA_ADDDATA_ERROR);
+
+                logger.info(result.getErrMsg());
+                return result;
+            }
+
             String pictureUrl= OssManagerUtil.getUrl(file);
 
             CorrectInfo correctInfo=new CorrectInfo(userId,pictureUrl,testGroupId);
@@ -269,8 +280,6 @@ public class TestController extends BaseController {
             map.put("testGroupId",testGroupId);
 
             map.put("type",2);
-
-            TestGroup testGroup = testGroupMapper.selectByPrimaryKey(testGroupId);
 
             TestInfo testInfo = testInfoMapper.selectByPrimaryKey(testGroup.getTestId());
 
