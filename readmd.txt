@@ -2,3 +2,4 @@ sys的com.lczyfz.edp.springboot.demo.sys.util里头的OssManagerUtil需要配置
 EmailUtil 里头的邮箱地址也得设置成自己所要用的
 yml文件也要配置邮件有关的参数
 上述参数暂以"xxxx"代替
+ps:这次考核项目有点匆忙，一些想写的东西被替代了，比如分题给分，分题提交答案，就变成了把所有题目做完写在一张纸上拍照后上传，老师批改也只有总分
