@@ -19,7 +19,7 @@ public class EmailUtil {
 
         mailSender.setUsername("xxxx@qq.com");
 
-        mailSender.setPassword("wsmjyrjyucgfdjgi");
+        mailSender.setPassword("xxxx");
 
         mailSender.setPort(465);
 
