@@ -259,7 +259,7 @@ public class TestController extends BaseController {
             if(END_STATUS.equals(testGroup.getStatus())){
                 result.fail(MsgCodeUtils.MSC_DATA_ADDDATA_ERROR);
 
-                logger.info(result.getErrMsg());
+                logger.info("答题时间已结束");
                 return result;
             }
 
