@@ -20,7 +20,7 @@ import java.util.List;
  * @author 86189
  */
 @Service
-public class UserInfoService extends CrudService<UserInfoMapper,UserInfo,UserInfoExample> {
+public class UserInfoService extends CrudService<UserInfoMapper, UserInfo, UserInfoExample> {
     private static final Integer TEACHER_CORD = 2;
     @Autowired
     UserInfoMapper userInfoMapper;

@@ -6,6 +6,7 @@ import com.lczyfz.edp.springboot.core.service.CrudService;
 import com.lczyfz.edp.springboot.demo.sys.entity.TestGroup;
 import com.lczyfz.edp.springboot.demo.sys.entity.TestGroupExample;
 import com.lczyfz.edp.springboot.demo.sys.mapper.TestGroupMapper;
+import com.lczyfz.edp.springboot.demo.sys.vo.PublishPageVO;
 import com.lczyfz.edp.springboot.demo.sys.vo.StuTestPageVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class TestGroupService extends CrudService<TestGroupMapper, TestGroup, Te
     /**
      * 获得学生所拥有的考试列表
      */
-    public Page<StuTestPageVO> getList(Page<StuTestPageVO> page,String studentId, int pageNo, int pageSize){
+    public Page<StuTestPageVO> getStuList(Page<StuTestPageVO> page,String studentId, int pageNo, int pageSize){
 
         TestGroupExample testGroupExample=new TestGroupExample();
 
@@ -49,9 +50,24 @@ public class TestGroupService extends CrudService<TestGroupMapper, TestGroup, Te
         criteria.andDelFlagEqualTo((byte) 0)
                 .andStudentIdEqualTo(studentId);
 
-        page.setCount(testGroupMapper.countByExample(testGroupExample));
-
         List<StuTestPageVO> pageList = testGroupMapper.getTestList(studentId,(pageNo - 1) * pageSize, pageSize);
+
+        page.setCount(pageList.size());
+
+        page.setList(pageList);
+
+        return page;
+
+    }
+
+    /**
+     * 获得教师所发布的考试列表
+     */
+    public Page<PublishPageVO> getPublishList(Page<PublishPageVO> page, String teacherId, int pageNo, int pageSize){
+
+        List<PublishPageVO> pageList = testGroupMapper.getPublishList(teacherId,(pageNo - 1) * pageSize, pageSize);
+
+        page.setCount(pageList.size());
 
         page.setList(pageList);
 

@@ -15,7 +15,7 @@ import java.util.List;
  * @author 86189
  */
 @Service
-public class CorrectInfoService extends CrudService<CorrectInfoMapper,CorrectInfo, CorrectInfoExample> {
+public class CorrectInfoService extends CrudService<CorrectInfoMapper, CorrectInfo, CorrectInfoExample> {
 
     @Autowired
     CorrectInfoMapper correctInfoMapper;

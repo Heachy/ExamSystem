@@ -59,10 +59,11 @@ public class CorrectController extends BaseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId",value = "用户id",readOnly = true),
             @ApiImplicitParam(name = "password",value = "密码",readOnly = true),
-            @ApiImplicitParam(name = "pageNo",value = "要获得的页码",readOnly = true)
+            @ApiImplicitParam(name = "pageNo",value = "要获得的页码",readOnly = true),
+            @ApiImplicitParam(name = "pageSize",value = "要获得的页面数据数量",readOnly = true)
     }
     )
-    public PageResult<CorrectPageVO> correctList(@RequestHeader String userId, @RequestHeader String password, int pageNo){
+    public PageResult<CorrectPageVO> correctList(@RequestHeader String userId, @RequestHeader String password, int pageNo,int pageSize){
         PageResult<CorrectPageVO> result = new PageResult<CorrectPageVO>().init();
         CommonResult commonResult = userInfoService.getResultMes(userId, password);
 
@@ -72,44 +73,11 @@ public class CorrectController extends BaseController {
             logger.info(commonResult.getErrMsg());
             return result;
         }else{
-            Page<CorrectPageVO> page = new Page<>(pageNo,5, "");
+            Page<CorrectPageVO> page = new Page<>(pageNo,pageSize, "");
 
-            result.success(correctInfoService.getList(page,userId,pageNo,5));
+            result.success(correctInfoService.getList(page,userId,pageNo,pageSize));
 
             return (PageResult<CorrectPageVO>) result.end();
-        }
-    }
-    @ApiOperation(value = "待批改试卷列表",notes = "获得待批改试卷的列表")
-    @RequestMapping(value = "/paperDetail",method = RequestMethod.GET,produces = {"application/json;charset=UTF-8"})
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId",value = "用户id",readOnly = true),
-            @ApiImplicitParam(name = "password",value = "密码",readOnly = true),
-            @ApiImplicitParam(name = "testGroupId",value = "考试组号id",readOnly = true)
-    }
-    )
-    public SubmitPaperVO correctPaperDetail(@RequestHeader String userId, @RequestHeader String password, Long testGroupId){
-        LoginJudgeDTO judgeDTO = userInfoService.judgeUser(userId, password);
-
-        if(!judgeDTO.getJudge()){
-            logger.info("账号或密码错误");
-
-            return null;
-        }else{
-
-            CorrectInfoExample correctInfoExample=new CorrectInfoExample();
-
-            CorrectInfoExample.Criteria criteria = correctInfoExample.createCriteria();
-
-            criteria.andTestGroupIdEqualTo(testGroupId);
-
-            List<CorrectInfo> correctInfos = correctInfoMapper.selectByExample(correctInfoExample);
-
-            logger.info("批改成功");
-
-            CorrectInfo correctInfo = correctInfos.get(0);
-
-            return new SubmitPaperVO(testPaperInfoService.getTestPaper(testGroupMapper.getPaperId(testGroupId)), correctInfo.getAnswerPicture(),
-                    Long.valueOf(correctInfo.getId()),(int) correctInfo.getScore(),correctInfo.getCorrectFlag());
         }
     }
 

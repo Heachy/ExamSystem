@@ -126,6 +126,8 @@ public class DelayUtils implements Runnable, InitializingBean {
 
                                 CorrectInfo correctInfo=new CorrectInfo(map.get("stuId").toString(),"null", Long.valueOf((Integer)testGroupId));
 
+                                correctInfo.setCorrectFlag(true);
+
                                 correctInfoMapper.insert(correctInfo);
                             }
                         }else{

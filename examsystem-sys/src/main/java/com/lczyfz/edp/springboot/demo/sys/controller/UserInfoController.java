@@ -48,10 +48,11 @@ public class UserInfoController extends BaseController {
             {
                     @ApiImplicitParam(name = "userId",value = "用户id",readOnly = true),
                     @ApiImplicitParam(name = "password",value = "密码",readOnly = true),
-                    @ApiImplicitParam(name = "pageNo",value = "要获得的页码",readOnly = true)
+                    @ApiImplicitParam(name = "pageNo",value = "要获得的页码",readOnly = true),
+                    @ApiImplicitParam(name = "pageSize",value = "要获得的页面数据数量",readOnly = true)
             }
     )
-    public PageResult<StudentPageVO> selectAllByPage(@RequestHeader String userId, @RequestHeader String password, int pageNo){
+    public PageResult<StudentPageVO> selectAllByPage(@RequestHeader String userId, @RequestHeader String password, int pageNo,int pageSize){
         PageResult<StudentPageVO> result = new PageResult<StudentPageVO>().init();
 
         CommonResult commonResult = userInfoService.getResultMes(userId, password);
@@ -62,9 +63,9 @@ public class UserInfoController extends BaseController {
             logger.info(commonResult.getErrMsg());
             return result;
         }else{
-            Page<StudentPageVO> page = new Page<>(pageNo,5, "");
+            Page<StudentPageVO> page = new Page<>(pageNo,pageSize, "");
 
-            result.success(userInfoService.getStudentList(page,pageNo,5));
+            result.success(userInfoService.getStudentList(page,pageNo,pageSize));
 
             return (PageResult<StudentPageVO>) result.end();
         }
@@ -76,7 +77,7 @@ public class UserInfoController extends BaseController {
             {
                     @ApiImplicitParam(name = "userId",value = "用户id",readOnly = true),
                     @ApiImplicitParam(name = "password",value = "密码",readOnly = true),
-                    @ApiImplicitParam(name = "newMail",value = "新邮箱",readOnly = true)
+                    @ApiImplicitParam(name = "newMail",value = "新邮箱",readOnly = true),
             }
     )
     public CommonResult updateMail(@RequestHeader String userId, @RequestHeader String password,String newMail){
@@ -114,10 +115,11 @@ public class UserInfoController extends BaseController {
             {
                     @ApiImplicitParam(name = "userId",value = "用户id",readOnly = true),
                     @ApiImplicitParam(name = "password",value = "密码",readOnly = true),
-                    @ApiImplicitParam(name = "pageNo",value = "要获得的页码",readOnly = true)
+                    @ApiImplicitParam(name = "pageNo",value = "要获得的页码",readOnly = true),
+                    @ApiImplicitParam(name = "pageSize",value = "要获得的页面数据数量",readOnly = true)
             }
     )
-    public PageResult<StuTestPageVO> getStuTests(@RequestHeader String userId, @RequestHeader String password, int pageNo){
+    public PageResult<StuTestPageVO> getStuTests(@RequestHeader String userId, @RequestHeader String password, int pageNo,int pageSize){
         PageResult<StuTestPageVO> result = new PageResult<StuTestPageVO>().init();
 
         LoginJudgeDTO judgeDTO = userInfoService.judgeUser(userId, password);
@@ -131,9 +133,9 @@ public class UserInfoController extends BaseController {
 
             logger.info(result.getErrMsg());
         }else{
-            Page<StuTestPageVO> page = new Page<>(pageNo,5, "");
+            Page<StuTestPageVO> page = new Page<>(pageNo,pageSize, "");
 
-            result.success(testGroupService.getList(page,userId,pageNo,5));
+            result.success(testGroupService.getStuList(page,userId,pageNo,pageSize));
 
             return (PageResult<StuTestPageVO>) result.end();
         }
@@ -146,10 +148,11 @@ public class UserInfoController extends BaseController {
             {
                     @ApiImplicitParam(name = "userId",value = "用户id",readOnly = true),
                     @ApiImplicitParam(name = "password",value = "密码",readOnly = true),
-                    @ApiImplicitParam(name = "pageNo",value = "要获得的页码",readOnly = true)
+                    @ApiImplicitParam(name = "pageNo",value = "要获得的页码",readOnly = true),
+                    @ApiImplicitParam(name = "pageSize",value = "要获得的页面数据数量",readOnly = true)
             }
     )
-    public PageResult<TeacherTestPageVO> getTeacherTests(@RequestHeader String userId, @RequestHeader String password, int pageNo){
+    public PageResult<TeacherTestPageVO> getTeacherTests(@RequestHeader String userId, @RequestHeader String password, int pageNo,int pageSize){
         PageResult<TeacherTestPageVO> result = new PageResult<TeacherTestPageVO>().init();
 
         CommonResult commonResult=userInfoService.getResultMes(userId,password);
@@ -158,9 +161,9 @@ public class UserInfoController extends BaseController {
 
             result.setErrMsg(result.getErrMsg());
         }else{
-            Page<TeacherTestPageVO> page = new Page<>(pageNo,5, "");
+            Page<TeacherTestPageVO> page = new Page<>(pageNo,pageSize, "");
 
-            result.success(testInfoService.getList(page,userId,pageNo,5));
+            result.success(testInfoService.getList(page,userId,pageNo,pageSize));
 
             return (PageResult<TeacherTestPageVO>) result.end();
         }

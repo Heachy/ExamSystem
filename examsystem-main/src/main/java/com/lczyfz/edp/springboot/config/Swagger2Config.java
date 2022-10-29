@@ -71,7 +71,7 @@ public class Swagger2Config {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Eep-Demo-SpringBoot")
+                .title("Examsystem-Demo-SpringBoot")
                 .description("Springboot基础开发工程swagger-api文档")
                 .termsOfServiceUrl("https://www.jianshu.com/u/9ea571de7752")
                 .version("1.0")

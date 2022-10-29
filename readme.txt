@@ -1,4 +1,5 @@
 sys的com.lczyfz.edp.springboot.demo.sys.util里头的OssManagerUtil需要配置自己的对象储存OSS的信息
+redis的相关配置也需要改
 EmailUtil 里头的邮箱地址也得设置成自己所要用的
 yml文件也要配置邮件有关的参数
 上述参数暂以"xxxx"代替

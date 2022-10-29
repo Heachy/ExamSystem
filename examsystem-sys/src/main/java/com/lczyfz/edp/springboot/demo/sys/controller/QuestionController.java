@@ -173,10 +173,11 @@ public class QuestionController extends BaseController {
             {
                     @ApiImplicitParam(name = "userId",value = "用户id",readOnly = true),
                     @ApiImplicitParam(name = "password",value = "密码",readOnly = true),
-                    @ApiImplicitParam(name = "pageNo",value = "要获得的页码",readOnly = true)
+                    @ApiImplicitParam(name = "pageNo",value = "要获得的页码",readOnly = true),
+                    @ApiImplicitParam(name = "pageSize",value = "要获得的页面数据数量",readOnly = true)
             }
     )
-    public PageResult<QuestionPageVO> selectAllByPage(@RequestHeader String userId, @RequestHeader String password,int pageNo){
+    public PageResult<QuestionPageVO> selectAllByPage(@RequestHeader String userId, @RequestHeader String password,int pageNo,int pageSize){
         PageResult<QuestionPageVO> result = new PageResult<QuestionPageVO>().init();
         CommonResult commonResult = userInfoService.getResultMes(userId, password);
 
@@ -186,9 +187,9 @@ public class QuestionController extends BaseController {
             logger.info(commonResult.getErrMsg());
             return result;
         }else{
-            Page<QuestionPageVO> page = new Page<>(pageNo,5, "");
+            Page<QuestionPageVO> page = new Page<>(pageNo,pageSize, "");
 
-            result.success(questionInfoService.getList(page,pageNo,5));
+            result.success(questionInfoService.getList(page,pageNo,pageSize));
 
             return (PageResult<QuestionPageVO>) result.end();
         }

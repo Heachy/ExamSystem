@@ -1,6 +1,5 @@
 package com.lczyfz.edp.springboot.demo.sys.vo;
 
-import com.lczyfz.edp.springboot.demo.sys.entity.QuestionInfo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

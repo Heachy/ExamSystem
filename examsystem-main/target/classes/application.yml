@@ -10,6 +10,9 @@ management:
     mappings:
       enabled: false
 spring:
+  redis:
+    password: 147258
+    host: 47.113.216.236
   mail:
     host: smtp.qq.com #设置邮箱主机
     protocol: smtps
@@ -32,7 +35,7 @@ spring:
   security:
     user:
       name: root
-      password: 020704
+      password: 147258
   activiti:
     check-process-definitions: false
   jackson:
@@ -71,6 +74,7 @@ spring:
       test-on-borrow: true
       test-on-return: true
       test-while-idle: true
+
       ## 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
       time-between-eviction-runs-millis: 60000
       ## 配置一个连接在池中最小生存的时间，单位是毫秒
@@ -120,10 +124,6 @@ spring:
       #spring.datasource.druid.druid.connectionProperties=druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
       ## 合并多个DruidDataSource的监控数据
       #spring.datasource.druid.druid.useGlobalDataSourceStat=true
-  redis:
-    host: 47.113.216.236
-    port: 6379
-    password: 147258
 
 
 

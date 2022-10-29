@@ -9,10 +9,13 @@ import com.lczyfz.edp.springboot.demo.sys.entity.TestPaperInfo;
 import com.lczyfz.edp.springboot.demo.sys.mapper.QuestionGroupMapper;
 import com.lczyfz.edp.springboot.demo.sys.mapper.TestPaperInfoMapper;
 import com.lczyfz.edp.springboot.demo.sys.service.QuestionGroupService;
+import com.lczyfz.edp.springboot.demo.sys.service.TestGroupService;
 import com.lczyfz.edp.springboot.demo.sys.service.TestPaperInfoService;
 import com.lczyfz.edp.springboot.demo.sys.service.UserInfoService;
 import com.lczyfz.edp.springboot.demo.sys.vo.DetailedTestPaperVO;
+import com.lczyfz.edp.springboot.demo.sys.vo.PublishPageVO;
 import com.lczyfz.edp.springboot.demo.sys.vo.SimpleTestPaperVO;
+import com.lczyfz.edp.springboot.demo.sys.vo.TeacherTestPageVO;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +35,9 @@ public class TestPaperController extends BaseController {
 
     @Autowired
     TestPaperInfoMapper testPaperInfoMapper;
+
+    @Autowired
+    TestGroupService testGroupService;
 
     @Autowired
     UserInfoService userInfoService;
@@ -209,10 +215,11 @@ public class TestPaperController extends BaseController {
             {
                     @ApiImplicitParam(name = "userId",value = "用户id",readOnly = true),
                     @ApiImplicitParam(name = "password",value = "密码",readOnly = true),
-                    @ApiImplicitParam(name = "pageNo",value = "要获得的页码",readOnly = true)
+                    @ApiImplicitParam(name = "pageNo",value = "要获得的页码",readOnly = true),
+                    @ApiImplicitParam(name = "pageSize",value = "要获得的页面数据数量",readOnly = true)
             }
     )
-    public PageResult<SimpleTestPaperVO> selectAllByPage(@RequestHeader String userId, @RequestHeader String password, int pageNo){
+    public PageResult<SimpleTestPaperVO> selectAllByPage(@RequestHeader String userId, @RequestHeader String password, int pageNo,int pageSize){
         PageResult<SimpleTestPaperVO> result = new PageResult<SimpleTestPaperVO>().init();
         CommonResult commonResult = userInfoService.getResultMes(userId, password);
 
@@ -222,9 +229,9 @@ public class TestPaperController extends BaseController {
             logger.info(commonResult.getErrMsg());
             return result;
         }else{
-            Page<SimpleTestPaperVO> page = new Page<>(pageNo,5, "");
+            Page<SimpleTestPaperVO> page = new Page<>(pageNo,pageSize, "");
 
-            result.success(testPaperInfoService.getList(page,pageNo,5));
+            result.success(testPaperInfoService.getList(page,pageNo,pageSize));
 
             return (PageResult<SimpleTestPaperVO>) result.end();
         }

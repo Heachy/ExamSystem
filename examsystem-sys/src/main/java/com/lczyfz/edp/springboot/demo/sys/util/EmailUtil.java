@@ -27,7 +27,7 @@ public class EmailUtil {
 
         SimpleMailMessage message = new SimpleMailMessage();
 
-        message.setFrom("xxxx@qq.com");
+        message.setFrom("xxxx.com");
 
         message.setTo(email);
 

@@ -2,12 +2,11 @@ package com.lczyfz.edp.springboot.demo.sys.controller;
 
 import com.lczyfz.edp.springboot.core.controller.BaseController;
 import com.lczyfz.edp.springboot.core.entity.CommonResult;
+import com.lczyfz.edp.springboot.core.entity.Page;
+import com.lczyfz.edp.springboot.core.entity.PageResult;
 import com.lczyfz.edp.springboot.core.utils.MsgCodeUtils;
 import com.lczyfz.edp.springboot.demo.sys.dto.LoginJudgeDTO;
-import com.lczyfz.edp.springboot.demo.sys.entity.CorrectInfo;
-import com.lczyfz.edp.springboot.demo.sys.entity.TestGroup;
-import com.lczyfz.edp.springboot.demo.sys.entity.TestInfo;
-import com.lczyfz.edp.springboot.demo.sys.entity.UserInfo;
+import com.lczyfz.edp.springboot.demo.sys.entity.*;
 import com.lczyfz.edp.springboot.demo.sys.mapper.CorrectInfoMapper;
 import com.lczyfz.edp.springboot.demo.sys.mapper.TestGroupMapper;
 import com.lczyfz.edp.springboot.demo.sys.mapper.TestInfoMapper;
@@ -19,6 +18,8 @@ import com.lczyfz.edp.springboot.demo.sys.service.UserInfoService;
 import com.lczyfz.edp.springboot.demo.sys.util.DelayUtils;
 import com.lczyfz.edp.springboot.demo.sys.util.OssManagerUtil;
 import com.lczyfz.edp.springboot.demo.sys.vo.DetailedTestPaperVO;
+import com.lczyfz.edp.springboot.demo.sys.vo.PublishPageVO;
+import com.lczyfz.edp.springboot.demo.sys.vo.SubmitPaperVO;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -58,6 +59,8 @@ public class TestController extends BaseController {
     CorrectInfoMapper correctInfoMapper;
 
     private static final String END_STATUS = "end";
+
+    private static final String NOT_START_STATUS = "notStart";
 
     @ApiOperation(value = "新建考试",notes = "仅限教师创建考试")
     @PostMapping(value = "/add",consumes = "multipart/form-data")
@@ -295,9 +298,97 @@ public class TestController extends BaseController {
 
             testGroupMapper.updateByPrimaryKey(testGroup);
 
-            DelayUtils.delayUtils.setDelay(id,map,50*60*10 );
+            DelayUtils.delayUtils.setDelay(id,map,50*60*1000 );
 
         }
         return result;
+    }
+
+
+    @ApiOperation(value = "教师查看自己发布的考试", notes = "仅限教师查看自己发布的考试信息")
+    @RequestMapping(value = "/publishList",method = RequestMethod.GET,produces = {"application/json;charset=UTF-8"})
+    @ApiImplicitParams(
+            {
+                    @ApiImplicitParam(name = "userId",value = "用户id",readOnly = true),
+                    @ApiImplicitParam(name = "password",value = "密码",readOnly = true),
+                    @ApiImplicitParam(name = "pageNo",value = "要获得的页码",readOnly = true),
+                    @ApiImplicitParam(name = "pageSize",value = "要获得的页面数据数量",readOnly = true)
+            }
+    )
+    public PageResult<PublishPageVO> getTeacherTests(@RequestHeader String userId, @RequestHeader String password, int pageNo,int pageSize){
+        PageResult<PublishPageVO> result = new PageResult<PublishPageVO>().init();
+
+        CommonResult commonResult=userInfoService.getResultMes(userId,password);
+        if(!commonResult.isSuccess()){
+            result.fail(commonResult.getMsgCode());
+
+            result.setErrMsg(result.getErrMsg());
+        }else{
+            Page<PublishPageVO> page = new Page<>(pageNo,pageSize, "");
+
+            result.success(testGroupService.getPublishList(page,userId,pageNo,pageSize));
+
+            return (PageResult<PublishPageVO>) result.end();
+        }
+        return result;
+    }
+    @ApiOperation(value = "撤销发布考试", notes = "仅限教师撤销发布考试")
+    @RequestMapping(value = "/cancelPub",method = RequestMethod.POST,produces = {"application/json;charset=UTF-8"})
+    @ApiImplicitParams(
+            {
+                    @ApiImplicitParam(name = "userId",value = "用户id",readOnly = true),
+                    @ApiImplicitParam(name = "password",value = "密码",readOnly = true),
+                    @ApiImplicitParam(name = "testGroupId",value = "考试组号",readOnly = true)
+            }
+    )
+    public CommonResult cancelPub(@RequestHeader String userId, @RequestHeader String password,Long testGroupId){
+        CommonResult result = userInfoService.getResultMes(userId, password);
+
+        if(!result.isSuccess()){
+            logger.info(result.getErrMsg());
+        }else{
+            TestGroup testGroup = testGroupMapper.selectByPrimaryKey(testGroupId);
+
+            if(!NOT_START_STATUS.equals(testGroup.getStatus())){
+                result.fail(MsgCodeUtils.MSG_DATA_NOT_ALLOW_DELETE);
+
+                logger.info("该学生已开始考试，无法撤销发布。");
+            }else{
+                testGroupService.delete(testGroup);
+            }
+        }
+        return result;
+    }
+
+    @ApiOperation(value = "已提交答案的试卷信息",notes = "获得已提交答案的试卷信息，若correctFlag为true，显示批改完，可显示成绩，false为待批改，不显示成绩")
+    @RequestMapping(value = "/subDetail",method = RequestMethod.GET,produces = {"application/json;charset=UTF-8"})
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userId",value = "用户id",readOnly = true),
+            @ApiImplicitParam(name = "password",value = "密码",readOnly = true),
+            @ApiImplicitParam(name = "testGroupId",value = "考试组号id",readOnly = true)
+    }
+    )
+    public SubmitPaperVO correctPaperDetail(@RequestHeader String userId, @RequestHeader String password, Long testGroupId){
+        LoginJudgeDTO judgeDTO = userInfoService.judgeUser(userId, password);
+
+        if(!judgeDTO.getJudge()){
+            logger.info("账号或密码错误");
+
+            return null;
+        }else{
+
+            CorrectInfoExample correctInfoExample=new CorrectInfoExample();
+
+            CorrectInfoExample.Criteria criteria = correctInfoExample.createCriteria();
+
+            criteria.andTestGroupIdEqualTo(testGroupId);
+
+            List<CorrectInfo> correctInfos = correctInfoMapper.selectByExample(correctInfoExample);
+
+            CorrectInfo correctInfo = correctInfos.get(0);
+
+            return new SubmitPaperVO(testPaperInfoService.getTestPaper(testGroupMapper.getPaperId(testGroupId)), correctInfo.getAnswerPicture(),
+                    Long.valueOf(correctInfo.getId()),(int) correctInfo.getScore(),correctInfo.getCorrectFlag());
+        }
     }
 }
